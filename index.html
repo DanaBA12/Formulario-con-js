@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <section>
+        <h1>Registrarse</h1>
+        <form id="emailForm">
+            <label for="Nombres">Nombre:</label>
+            <input type="text" id="Nombres" name="Nombres" required>
+    
+            <label for="Apellidos">Apellido:</label>
+            <input type="text" id="Apellidos" name="Apellidos" required>
+
+            <label for="FechaNacimiento">Fecha de Nacimiento:</label>
+            <input type="date" id="FechaNacimiento" name="FechaNacimiento" required>
+    
+            <label for="Contraseña">Contraseña:</label>
+            <input type="password" id="Contraseña" name="Contraseña" required>
+    
+            <label for="ConfirmarContraseña">Confirmar Contraseña:</label>
+            <input type="password" id="ConfirmarContraseña" name="ConfirmarContraseña" required>
+    
+            <button type="submit">Crear Correo</button>
+        </form>
+    
+        <div id="result"></div>
+    
+        <div id="welcomeMessage" style="display:none;">
+            <p>Bienvenid@, <span id="welcomeName"></span>!</p>
+            <button id="continueButton">Continuar</button>
+        </div>
+    
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const Nombres = document.getElementById('Nombres').value.trim();
+            const Apellidos = document.getElementById('Apellidos').value.trim();
+            const fechaNacimiento = document.getElementById('FechaNacimiento').value;
+            const contraseña = document.getElementById('Contraseña').value;
+            const confirmarContraseña = document.getElementById('ConfirmarContraseña').value;
+
+            const nombrePartes = Nombres.split(' ');
+            const apellidoPartes = Apellidos.split(' ');
+
+            const inicialNombre = nombrePartes[0].substring(0, 2); 
+            const inicialesApellidos = apellidoPartes.map(a => a.substring(0, 3)).join(''); 
+            const añoNacimiento = new Date(fechaNacimiento).getFullYear();
+            
+            const email = `${inicialNombre}${inicialesApellidos}${añoNacimiento.toString().slice(-2)}@gmail.com`.toLowerCase();
+            document.getElementById('result').innerText = `Correo Electrónico Generado: ${email}`;
+
+            if (contraseña !== confirmarContraseña) {
+                document.getElementById('result').innerText += '\nLas contraseñas no coinciden.';
+                return;
+            }
+            const requisitos = [];
+            if (!/[A-Z]/.test(contraseña)) requisitos.push('al menos una letra mayúscula');
+            if (!/[a-z]/.test(contraseña)) requisitos.push('al menos una letra minúscula');
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(contraseña)) requisitos.push('al menos un carácter especial');
+            if (!/\d/.test(contraseña)) requisitos.push('al menos un dígito');
+            if (contraseña.length <= 8) requisitos.push('más de 8 caracteres');
+
+            if (requisitos.length === 0) {
+                document.getElementById('result').innerText += '\nContraseña válida. Registro exitoso.';
+
+                document.getElementById('welcomeMessage').style.display = 'block';
+                document.getElementById('welcomeName').innerText = Nombres;
+
+                document.getElementById('continueButton').addEventListener('click', function() {
+                    document.getElementById('welcomeMessage').style.display = 'none';
+                });
+            } else {
+                document.getElementById('result').innerText += '\nContraseña no válida. Asegúrate de que cumpla con: ' + requisitos.join(', ') + '.';
+            }
+        });
+    </script>
+</body>
+</html>
